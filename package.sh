@@ -10,6 +10,7 @@ zip -r $ZIP_NAME . \
     -x "*.git*" \
     -x "README.md" \
     -x "package.sh" \
-    -x "*.DS_Store"
+    -x "*.DS_Store" \
+    -x ".*" \
 
 echo "打包完成：$ZIP_NAME"

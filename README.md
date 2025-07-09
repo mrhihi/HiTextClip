@@ -15,7 +15,7 @@ HiTextClip 是一款 Chrome 擴充功能，讓你能夠「儲存網頁上選取�
 
 - `storage`：儲存所有片段資料。
 - `clipboardWrite`：支援一鍵複製文字到剪貼簿。
-- `scripting`、`activeTab`、`<all_urls>`：用於插入內容腳本、取得選取範圍與跨頁操作。
+- `activeTab`、`<all_urls>`：取得選取範圍與跨頁操作。
 
 ## 安裝方式(開發者模式)
 
