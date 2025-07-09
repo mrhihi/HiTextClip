@@ -1,6 +1,7 @@
 # HiTextClip
 
 HiTextClip 是一款 Chrome 擴充功能，讓你能夠「儲存網頁上選取文字的範圍」，並以選擇器精確記錄位置，方便日後一鍵複製同一區塊的內容，適合重複抄錄、比對、或跨頁管理重點文字。
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/mrhihi/HiTextClip)
 
 ## 主要功能
 
