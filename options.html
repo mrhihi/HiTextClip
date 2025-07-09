@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>HiTextClip 設定與管理</title>
+  <style>
+    body { font-family: sans-serif; margin: 16px; }
+    button.toggle-btn {
+      font-size: 13px;
+      padding: 2px 6px;
+      margin-right: 6px;
+      cursor: pointer;
+      background: #eee;
+      border: 1px solid #bbb;
+      border-radius: 3px;
+    }
+    .url-section { margin-bottom: 18px; }
+    .clip-list { margin: 0; padding: 0; list-style: none; }
+    .clip-item { margin-bottom: 8px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+    .actions { margin-top: 4px; }
+    button { margin-right: 4px; }
+  .new-block-form {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+  .new-block-title {
+    margin-top: 0;
+  }
+  .form-row {
+    margin-bottom: 12px;
+  }
+  .form-label {
+    display: block;
+    margin-bottom: 4px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 4px;
+  }
+  .add-btn {
+    padding: 6px 12px;
+  }
+  .tip-text {
+    margin: 8px 0 0;
+    color: #666;
+    font-size: 13px;
+  }
+  .first-use-guide {
+    display: none;
+    color: #555;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+  .first-use-list {
+    padding-left: 18px;
+  }
+  .first-use-link {
+    margin-top: 6px;
+  }
+  .first-use-anchor {
+    color: #1976d2;
+  }
+  </style>
+</head>
+<body>
+  <h2>HiTextClip 全域管理</h2>
+  
+  <!-- 新增區塊表單 -->
+  <div class="new-block-form">
+    <div style="display: flex; align-items: center;">
+      <button id="toggleNewBlockBtn" class="toggle-btn" type="button">▼</button>
+      <h3 class="new-block-title" style="margin: 0;">新增區塊</h3>
+    </div>
+    <div class="form-row">
+      <label class="form-label">網址：</label>
+      <input type="text" id="newUrl" class="form-input"
+             placeholder="請輸入完整網址（例：https://example.com/page）">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Start Selector：</label>
+      <input type="text" id="newStartSelector" class="form-input"
+             placeholder="請輸入起始 CSS 選擇器（預設同 Selector）">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Start Offset：</label>
+      <input type="number" id="newStartOffset" class="form-input"
+             placeholder="請輸入起始位移（預設 0）" value="0">
+    </div>
+    <div class="form-row">
+      <label class="form-label">End Selector：</label>
+      <input type="text" id="newEndSelector" class="form-input"
+             placeholder="請輸入結束 CSS 選擇器（預設同 Selector）">
+    </div>
+    <div class="form-row">
+      <label class="form-label">End Offset：</label>
+      <input type="number" id="newEndOffset" class="form-input"
+             placeholder="請輸入結束位移（預設 0）" value="0">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Frame Selector：</label>
+      <input type="text" id="newFrameSelector" class="form-input"
+             placeholder="請輸入 frame CSS 選擇器（如無則留空）">
+    </div>
+    <button id="addNewBtn" class="add-btn">新增</button>
+    <button id="pasteClipBtn" class="add-btn" type="button">貼上</button>
+    <button id="importClipBtn" class="add-btn" type="button">匯入</button>
+    <input type="file" id="importClipFile" accept="application/json" style="display:none;">
+    <p class="tip-text">
+      提示：請確保網址和選擇器的格式正確。選擇器必須能準確指向要選取的文字區塊。
+    </p>
+  </div>
+
+  <!-- 已存區塊列表 -->
+  <h3>已儲存區塊</h3>
+  <div id="urlSections"></div>
+  <div id="firstUseGuide" class="first-use-guide">
+    <strong>如何開始使用：</strong>
+    <ol class="first-use-list">
+      <li>請先於任意網頁選取一段文字並儲存。</li>
+      <li>本頁會顯示所有已儲存的網址與區塊，支援批次刪除、編輯與複製。</li>
+      <!-- <li>如需詳細教學，請參考下方連結。</li> -->
+    </ol>
+    <!-- <div class="first-use-link">
+      <a href="https://github.com/your-repo/HiTextClip#usage" target="_blank" class="first-use-anchor">詳細教學</a>
+    </div> -->
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

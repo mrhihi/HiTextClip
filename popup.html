@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>HiTextClip 快速管理</title>
+  <style>
+    body { font-family: sans-serif; margin: 12px; min-width: 260px; }
+    .clip-list { margin: 0; padding: 0; list-style: none; }
+    .clip-item { margin-bottom: 8px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+    .actions { margin-top: 4px; }
+    button { margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <h2>HiTextClip</h2>
+  <label style="display:block; margin-bottom:10px;">
+    <input type="checkbox" id="enableFloatingBtn" checked>
+    啟用選取文字時顯示浮動按鈕
+  </label>
+  <div id="addClipForm" style="display:none; margin-bottom:10px;"></div>
+  <ul id="clipList" class="clip-list"></ul>
+  <div id="emptyMsg" style="display:none;">尚無儲存區塊</div>
+  <div id="firstUseGuide" style="display:none; color:#555; font-size:14px; margin-top:12px;">
+    <strong>如何開始使用：</strong>
+    <ol style="padding-left:18px;">
+      <li>請在任意網頁選取一段文字。</li>
+      <li>選取後會出現「儲存文字範圍」浮動按鈕，點擊即可將文字儲存並複製。</li>
+      <li>儲存後，您可在本視窗管理、複製或編輯區塊。</li>
+    </ol>
+    <!-- <div style="margin-top:6px;">
+      <a href="https://github.com/your-repo/HiTextClip#usage" target="_blank" style="color:#1976d2;">詳細教學</a>
+    </div> -->
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
