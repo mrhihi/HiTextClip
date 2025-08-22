@@ -2,25 +2,45 @@
 // HiTextClip popup 腳本：負責顯示與管理當前網址下的區塊
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 處理浮動按鈕啟用 checkbox
-  const enableCheckbox = document.getElementById('enableFloatingBtn');
-  if (enableCheckbox) {
-    chrome.storage.local.get(['enableFloatingBtn'], (result) => {
-      enableCheckbox.checked = result.enableFloatingBtn !== false; // 預設啟用
-    });
-    enableCheckbox.addEventListener('change', () => {
-      chrome.storage.local.set({ enableFloatingBtn: enableCheckbox.checked });
-      // 通知 content script 狀態變更
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0]?.id) {
-          chrome.tabs.sendMessage(tabs[0].id, {
-            type: 'update_enable_floating_btn',
-            enabled: enableCheckbox.checked
-          });
-        }
-      });
-    });
-  }
+   // 處理浮動按鈕啟用 checkbox
+   const enableCheckbox = document.getElementById('enableFloatingBtn');
+   if (enableCheckbox) {
+     chrome.storage.local.get(['enableFloatingBtn'], (result) => {
+       enableCheckbox.checked = result.enableFloatingBtn !== false; // 預設啟用
+     });
+     enableCheckbox.addEventListener('change', () => {
+       chrome.storage.local.set({ enableFloatingBtn: enableCheckbox.checked });
+       // 通知 content script 狀態變更
+       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+         if (tabs[0]?.id) {
+           chrome.tabs.sendMessage(tabs[0].id, {
+             type: 'update_enable_floating_btn',
+             enabled: enableCheckbox.checked
+           });
+         }
+       });
+     });
+   }
+
+   // 處理 HTML 複製設定 checkbox
+   const htmlCheckbox = document.getElementById('copyHtmlContent');
+   if (htmlCheckbox) {
+     chrome.storage.local.get(['copyHtmlContent'], (result) => {
+       htmlCheckbox.checked = result.copyHtmlContent === true; // 預設不啟用
+     });
+     htmlCheckbox.addEventListener('change', () => {
+       chrome.storage.local.set({ copyHtmlContent: htmlCheckbox.checked });
+       // 通知 content script 狀態變更
+       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+         if (tabs[0]?.id) {
+           chrome.tabs.sendMessage(tabs[0].id, {
+             type: 'update_copy_html_content',
+             enabled: htmlCheckbox.checked
+           });
+         }
+       });
+     });
+   }
 
   const clipList = document.getElementById('clipList');
   const emptyMsg = document.getElementById('emptyMsg');

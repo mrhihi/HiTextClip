@@ -441,6 +441,9 @@ const FloatButton = {
   }
 };
 
+// 全域設定
+let globalCopyHtmlContent = false;
+
 // 訊息處理器
 const MessageHandler = {
   // 處理來自 popup 的訊息
@@ -499,14 +502,14 @@ const MessageHandler = {
   handleGetSelectedText(msg, sendResponse) {
     const selection = this.handleSelectContent(msg);
     if (selection) {
-      // 使用 convertSelectionToMarkdown 轉換選取內容
-      const text = this.convertSelectionToMarkdown(selection).trim();
-      console.log('[HiTextClip] Selected text (markdown):', text.substring(0, 10) + '...');
-      selection.removeAllRanges(); // 清除選取範圍
-      sendResponse({ text });
-    } else {
-      // 如果沒有選取內容，有可能是因為接收到訊息是 window.top 但現在是在 iframe 裡面，所以不要處理，不然會把應該要複製到的文字清掉
-    }
+       // 使用 convertSelectionToContent 轉換選取內容
+       const text = this.convertSelectionToContent(selection).trim();
+       console.log('[HiTextClip] Selected text:', text.substring(0, 10) + '...');
+       selection.removeAllRanges(); // 清除選取範圍
+       sendResponse({ text });
+     } else {
+       // 如果沒有選取內容，有可能是因為接收到訊息是 window.top 但現在是在 iframe 裡面，所以不要處理，不然會把應該要複製到的文字清掉
+     }
   },
 
   // 選取內容
@@ -542,77 +545,88 @@ const MessageHandler = {
     return null;
   },
 
-  // 將選取範圍內容轉成 markdown 格式文字，處理超連結和圖片
-  convertSelectionToMarkdown(selection) {
-    if (!selection || selection.rangeCount === 0) return '';
+  // 將選取範圍內容轉換為文字或 HTML
+   convertSelectionToContent(selection) {
+     if (!selection || selection.rangeCount === 0) return '';
 
-    const range = selection.getRangeAt(0);
-    const container = document.createElement('div');
-    container.appendChild(range.cloneContents());
+     const range = selection.getRangeAt(0);
+     const container = document.createElement('div');
+     container.appendChild(range.cloneContents());
 
-    // 遞迴處理節點，轉換 a 和 img 標籤為 markdown
-    function nodeToMarkdown(node) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        return node.textContent;
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        if (node.tagName.toLowerCase() === 'a') {
-          const href = node.getAttribute('href') || '';
-          const text = Array.from(node.childNodes).map(child => nodeToMarkdown(child)).join('');
-          return `[${text}](${href})`;
-        } else if (node.tagName.toLowerCase() === 'img') {
-          const alt = node.getAttribute('alt') || 'image';
-          const src = node.getAttribute('src') || '';
-          return `![${alt}](${src})`;
-        } else {
-          // 處理子節點
-          return Array.from(node.childNodes).map(child => nodeToMarkdown(child)).join('');
-        }
-      }
-      return '';
-    }
+     if (globalCopyHtmlContent) {
+       // 複製 HTML 內容
+       return container.innerHTML;
+     } else {
+       // 複製純文字（markdown 格式）
+       // 遞迴處理節點，轉換 a 和 img 標籤為 markdown
+       function nodeToMarkdown(node) {
+         if (node.nodeType === Node.TEXT_NODE) {
+           return node.textContent;
+         } else if (node.nodeType === Node.ELEMENT_NODE) {
+           if (node.tagName.toLowerCase() === 'a') {
+             const href = node.getAttribute('href') || '';
+             const text = Array.from(node.childNodes).map(child => nodeToMarkdown(child)).join('');
+             return `[${text}](${href})`;
+           } else if (node.tagName.toLowerCase() === 'img') {
+             const alt = node.getAttribute('alt') || 'image';
+             const src = node.getAttribute('src') || '';
+             return `![${alt}](${src})`;
+           } else {
+             // 處理子節點
+             return Array.from(node.childNodes).map(child => nodeToMarkdown(child)).join('');
+           }
+         }
+         return '';
+       }
 
-    let markdown = nodeToMarkdown(container);
+       let markdown = nodeToMarkdown(container);
 
-    // 處理每行開頭空白 trim，合併多行空白行為一行
-    const lines = markdown.split('\n');
-    const processedLines = [];
-    let lastLineEmpty = false;
-    for (let line of lines) {
-      const trimmedLine = line.trim();
-      const isEmpty = trimmedLine === '' || /^[ \t]+$/.test(trimmedLine);
-      if (isEmpty) {
-        if (!lastLineEmpty) {
-          processedLines.push('');
-          lastLineEmpty = true;
-        }
-      } else {
-        processedLines.push(trimmedLine);
-        lastLineEmpty = false;
-      }
-    }
+       // 處理每行開頭空白 trim，合併多行空白行為一行
+       const lines = markdown.split('\n');
+       const processedLines = [];
+       let lastLineEmpty = false;
+       for (let line of lines) {
+         const trimmedLine = line.trim();
+         const isEmpty = trimmedLine === '' || /^[ \t]+$/.test(trimmedLine);
+         if (isEmpty) {
+           if (!lastLineEmpty) {
+             processedLines.push('');
+             lastLineEmpty = true;
+           }
+         } else {
+           processedLines.push(trimmedLine);
+           lastLineEmpty = false;
+         }
+       }
 
-    return processedLines.join('\n');
-  }
+       return processedLines.join('\n');
+     }
+   }
 };
 
 // 初始化
 (function init() {
-  // 初始化高亮樣式
-  HighlightManager.init();
+ // 初始化高亮樣式
+ HighlightManager.init();
 
-  // 浮動按鈕啟用狀態
-  let enableFloatingBtn = true;
+ // 浮動按鈕啟用狀態
+ let enableFloatingBtn = true;
+ // HTML 複製設定
+ let copyHtmlContent = false;
 
-  // 讀取啟用狀態
-  chrome.storage.local.get(['enableFloatingBtn'], (result) => {
-    enableFloatingBtn = result.enableFloatingBtn !== false;
-  });
+ // 讀取啟用狀態
+ chrome.storage.local.get(['enableFloatingBtn', 'copyHtmlContent'], (result) => {
+   enableFloatingBtn = result.enableFloatingBtn !== false;
+   globalCopyHtmlContent = result.copyHtmlContent === true;
+ });
 
   // 監聽 popup 狀態變更
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.type === 'update_enable_floating_btn') {
       enableFloatingBtn = !!msg.enabled;
       if (!enableFloatingBtn) FloatButton.hide();
+    } else if (msg.type === 'update_copy_html_content') {
+      globalCopyHtmlContent = !!msg.enabled;
     }
     // 保持原有訊息處理
     MessageHandler.handlePopupMessage(msg, sender, sendResponse);
