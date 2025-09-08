@@ -42,8 +42,13 @@ const SelectorUtils = {
     let element = node.nodeType === 3 ? node.parentNode : node;
     if (!element || element === context.document.body) return 'body';
 
-    // 嘗試 ID
-    if (element.id) {
+    // 嘗試 ID（排除隨機/uuid 型式）
+    if (
+      element.id &&
+      !element.id.match(
+        /^(\d{4,}|.+\d{4,}|[a-f0-9\-]{16,}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/i
+      )
+    ) {
       const idSelector = `#${CSS.escape(element.id)}`;
       if (this.validateSelector(idSelector, element, context)) {
         return idSelector;
